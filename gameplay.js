@@ -8,9 +8,5 @@ function gameStart() {
 	const currPlayerContainer = document.querySelector(`[data-player="${currPlayerObj.player.toLowerCase()}"]`);
 	currPlayerContainer.classList.add('current-turn');
 
-	if (currPlayerIndex + 1 === playersData.length) {
-		currPlayerIndex = 0;
-	} else {
-		currPlayerIndex++;
-	}
+	currPlayerIndex + 1 === playersData.length ? (currPlayerIndex = 0) : currPlayerIndex++;
 }
