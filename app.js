@@ -1,5 +1,3 @@
-const cardsDealt = [ 1, 1, 1, 1, 2, 3, 4, 5, 6, 7, 8, 8, 8, 8, 8, 8, 8, 8, 7, 6, 5, 4, 3, 2, 1, 1, 1, 1 ];
-
 // DOM elements
 const menu = document.getElementById('menu');
 const newGameBtn = document.querySelector('.new-game__start');
@@ -17,6 +15,7 @@ let playerCardsEls = document.querySelectorAll('.players__cards');
 // Round is uses to keep track of round and also how many cards are dealt in a specific round
 // It will be used as indice for cardsDealt array (cardsDealt[round])
 let valuesAndSuits;
+let cardsDealt;
 let round = 0;
 let deckId;
 let handIndex = 0;
@@ -27,7 +26,7 @@ let playersData = [
 	{ lime: 'lime', hand: [], score: 0, handsWon: 0 }
 ];
 
-// Prepare number of cards in deck based on num of players
+// * Prepare values of cards needed
 function prepareDeck() {
 	const suits = [ 'S', 'D', 'C', 'H' ];
 	let values = [ 7, 8, 9, 0, 'A', 'J', 'Q', 'K' ];
@@ -40,7 +39,7 @@ function prepareDeck() {
 	return valuesAndSuits;
 }
 
-// * Function that returns a string with all possible card values and suits to be used inAPI call
+// * Function that returns a string with all possible card values and suits to be used in API call
 function apiCardList() {
 	let arr = [];
 	for (let cardValue of valuesAndSuits[0]) {
@@ -50,6 +49,18 @@ function apiCardList() {
 	}
 
 	return arr.join(',');
+}
+
+// * Create an array with cards to deal for each roung
+function createRoundsArr() {
+	const twoToSeven = [ 2, 3, 4, 5, 6, 7 ];
+	const roundOneTimes = [];
+	const roundEightTimes = [];
+	for (let i = 0; i < playersData.length; i++) {
+		roundOneTimes.push(1);
+		roundEightTimes.push(8);
+	}
+	cardsDealt = [ ...roundOneTimes, ...twoToSeven, ...roundEightTimes, ...twoToSeven.reverse(), ...roundOneTimes ];
 }
 
 // * Calculate number of cards to draw each round
@@ -175,6 +186,7 @@ function createCardSpaces() {
 // * Event listeners
 newGameBtn.addEventListener('click', () => {
 	getPlayersCount();
+	createRoundsArr();
 	prepareDeck();
 	checkDeckId();
 
