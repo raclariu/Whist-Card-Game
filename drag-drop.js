@@ -18,7 +18,7 @@ function onDragEnd(draggables) {
 	draggables.forEach(draggable => {
 		draggable.addEventListener('dragend', e => {
 			draggable.classList.remove('dragging');
-			dragged = null;
+			draggedCard = null;
 		});
 	});
 }
@@ -53,12 +53,12 @@ function onDrop(dropSpaces) {
 		space.addEventListener('drop', e => {
 			e.preventDefault();
 			e.target.classList.remove('valid-space');
-			let draggedParent = draggedCard.parentElement;
-			if (draggedCard.parentElement.classList.contains('current-turn')) {
+			let draggedParent = draggedCard.parentElement.classList;
+			if (draggedParent.contains('current-turn')) {
 				if (e.target.classList.contains('container__card-space') && e.target.childElementCount === 0) {
 					e.target.appendChild(draggedCard);
 					draggedCard.setAttribute('draggable', false);
-					draggedParent.classList.remove('current-turn');
+					draggedParent.remove('current-turn');
 					gameStart();
 				}
 			}
