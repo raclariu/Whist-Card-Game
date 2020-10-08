@@ -8,7 +8,7 @@ const rulesBtn = document.querySelector('.new-game__rules');
 const leftSide = document.getElementById('players');
 const rightSide = document.getElementById('play-area');
 const playCardsContainer = document.querySelector('.play-area__cards-container');
-
+let gameplayHeadline = document.querySelector('.play-area__headline');
 let playerContainers = document.querySelectorAll('.players__container');
 let playerCardsEls = document.querySelectorAll('.players__cards');
 
@@ -16,14 +16,14 @@ let playerCardsEls = document.querySelectorAll('.players__cards');
 // It will be used as indice for cardsDealt array (cardsDealt[round])
 let valuesAndSuits;
 let cardsDealt;
-let round = 0;
+let round = 10;
 let deckId;
 let handIndex = 0;
 let playersData = [
-	{ orange: 'orange', hand: [], score: 0, handsWon: 0 },
-	{ cyan: 'cyan', hand: [], score: 0, handsWon: 0 },
-	{ magenta: 'magenta', hand: [], score: 0, handsWon: 0 },
-	{ lime: 'lime', hand: [], score: 0, handsWon: 0 }
+	{ player: 'Orange', hand: [], score: 0, handsWon: 0 },
+	{ player: 'Cyan', hand: [], score: 0, handsWon: 0 },
+	{ player: 'Magenta', hand: [], score: 0, handsWon: 0 },
+	{ player: 'Lime', hand: [], score: 0, handsWon: 0 }
 ];
 
 // * Prepare values of cards needed
@@ -51,7 +51,9 @@ function apiCardList() {
 	return arr.join(',');
 }
 
-// * Create an array with cards to deal for each roung
+// * Calculate number of rounds
+// * Each array item represents the number of cards the player will have in hand for the respective round
+// * Array length is the total number of rounds in the game
 function createRoundsArr() {
 	const twoToSeven = [ 2, 3, 4, 5, 6, 7 ];
 	const roundOneTimes = [];
@@ -63,7 +65,7 @@ function createRoundsArr() {
 	cardsDealt = [ ...roundOneTimes, ...twoToSeven, ...roundEightTimes, ...twoToSeven.reverse(), ...roundOneTimes ];
 }
 
-// * Calculate number of cards to draw each round
+// * Calculate total number of cards to draw each round
 const calcCardsToDraw = () => cardsDealt[round] * playersData.length;
 
 // * Calculate starting players based on selection
@@ -137,9 +139,8 @@ function showCardsinDom() {
 		element.innerHTML = hand.map(card => `<img src="${card.image}" class="card" draggable="true" />`).join('');
 		index++;
 	});
-
-	//test
 	dragDrop();
+	gameStart();
 }
 
 // * Split cards to players
@@ -196,7 +197,6 @@ newGameBtn.addEventListener('click', () => {
 			drawCardsFromDeck(calcCardsToDraw());
 		}, 500);
 	}, 500);
-
 	menu.remove();
 	createCardSpaces();
 	leftSide.style.display = 'flex';
@@ -213,82 +213,3 @@ window.addEventListener('click', e => (e.target === modal ? modal.classList.remo
 closeModalIcon.addEventListener('click', e => {
 	modal.classList.remove('show-modal');
 });
-
-// Drag and Drop
-let draggedCard;
-
-function onDragStart(draggables) {
-	draggables.forEach(draggable => {
-		draggable.addEventListener('dragstart', e => {
-			draggedCard = e.target;
-			const canBeDragged = draggedCard.attributes.draggable.value;
-			if (canBeDragged) {
-				draggable.classList.add('dragging');
-				console.log('dragging');
-			}
-		});
-	});
-}
-
-function onDragEnd(draggables) {
-	draggables.forEach(draggable => {
-		draggable.addEventListener('dragend', e => {
-			draggable.classList.remove('dragging');
-			console.log('end');
-			dragged = null;
-			console.log(draggedCard);
-		});
-	});
-}
-
-function onDragOver(dropSpaces) {
-	dropSpaces.forEach(space => {
-		space.addEventListener('dragover', e => {
-			e.preventDefault();
-		});
-	});
-}
-
-function onDragEnter(dropSpaces) {
-	dropSpaces.forEach(space => {
-		space.addEventListener('dragenter', e => {
-			e.preventDefault();
-			e.target.classList.add('valid-space');
-			console.log('entered valid area');
-		});
-	});
-}
-
-function onDragLeave(dropSpaces) {
-	dropSpaces.forEach(space => {
-		space.addEventListener('dragleave', e => {
-			e.target.classList.remove('valid-space');
-			console.log('left valid area');
-		});
-	});
-}
-
-function onDrop(dropSpaces) {
-	dropSpaces.forEach(space => {
-		space.addEventListener('drop', e => {
-			e.preventDefault();
-			console.log('dropped');
-			console.dir(e.target);
-			if (e.target.classList.contains('container__card-space') && e.target.childElementCount === 0) {
-				e.target.appendChild(draggedCard);
-				draggedCard.setAttribute('draggable', false);
-			}
-		});
-	});
-}
-
-function dragDrop() {
-	const dropSpaces = document.querySelectorAll('.container__card-space');
-	const draggables = document.querySelectorAll('img.card[draggable="true"]');
-	onDragStart(draggables);
-	onDragEnd(draggables);
-	onDragOver(dropSpaces);
-	onDragEnter(dropSpaces);
-	onDragLeave(dropSpaces);
-	onDrop(dropSpaces);
-}
