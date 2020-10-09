@@ -59,7 +59,10 @@ function onDrop(dropSpaces) {
 					e.target.appendChild(draggedCard);
 					draggedCard.setAttribute('draggable', false);
 					draggedParent.remove('current-turn');
-					gameStart();
+					cardsPlayed++;
+					console.dir(e.target);
+					console.log(cardsPlayed);
+					checkRoundFinish();
 				}
 			}
 		});

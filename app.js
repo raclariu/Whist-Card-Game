@@ -166,7 +166,8 @@ async function drawCardsFromDeck(num) {
 		const data = await response.json();
 		console.log(`draw ${num} cards ---`, data);
 		const cards = [ ...data.cards ];
-		dealCards(cards);
+		if (num !== 1) dealCards(cards);
+		return cards;
 	} catch (error) {
 		console.log('drawCardsFromDeck() error ->', error);
 	}
@@ -177,11 +178,21 @@ function createCardSpaces() {
 	for (let player in playersData) {
 		const space = document.createElement('div');
 		space.classList.add('container__card-space');
+		// space.setAttribute('draggable', 'false');
 		playCardsContainer.appendChild(space);
 	}
-	const trumpCard = document.createElement('div');
-	trumpCard.classList.add('container__trump-space');
-	playCardsContainer.appendChild(trumpCard);
+	const trumpCardEl = document.createElement('div');
+	trumpCardEl.classList.add('container__trump-space');
+	// trumpCardEl.setAttribute('draggable', 'false');
+	playCardsContainer.appendChild(trumpCardEl);
+}
+
+// * Draw trump card if players don't use 8 cards this round
+function drawTrumpCard(card) {
+	if (cardsDealt[round] !== 8) {
+		const trumpCardEl = document.querySelector('.container__trump-space');
+		trumpCardEl.innerHTML = `<img src="${card[0].image}" class="trump-card" draggable="false" />`;
+	} else return console.log('no trump this round');
 }
 
 // * Event listeners
@@ -195,6 +206,7 @@ newGameBtn.addEventListener('click', () => {
 		shuffleDeck();
 		setTimeout(() => {
 			drawCardsFromDeck(calcCardsToDraw());
+			drawCardsFromDeck(1).then(card => drawTrumpCard(card));
 		}, 500);
 	}, 500);
 	menu.remove();

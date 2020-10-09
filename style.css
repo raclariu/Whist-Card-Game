@@ -145,6 +145,11 @@ body {
     transform: scale(1.06);
 }
 
+.trump-card {
+    width: 90px;
+    height: 125px;
+}
+
 .players__stats {
     display: flex;
     flex-direction: column;
