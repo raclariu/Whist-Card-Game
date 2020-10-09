@@ -3,6 +3,10 @@ let currPlayerIndex = randomPlayer;
 let currRoundPlayedCards = 0;
 let cardsPlayed = 0;
 
+function predictHandsWon() {
+	locked = true;
+}
+
 function calculateScore() {
 	const dropSpaces = document.querySelectorAll('.container__card-space');
 	gameplayHeadline.innerHTML = `Calculating score...`;
@@ -13,6 +17,7 @@ function calculateScore() {
 		});
 		gameStart();
 	}, 3000);
+	// * Here
 }
 
 function checkRoundFinish() {

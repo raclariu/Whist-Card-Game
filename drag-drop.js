@@ -53,15 +53,14 @@ function onDrop(dropSpaces) {
 		space.addEventListener('drop', e => {
 			e.preventDefault();
 			e.target.classList.remove('valid-space');
-			let draggedParent = draggedCard.parentElement.classList;
-			if (draggedParent.contains('current-turn')) {
+			let draggedParent = draggedCard.parentElement;
+			console.dir(draggedParent);
+			if (draggedParent.classList.contains('current-turn')) {
 				if (e.target.classList.contains('container__card-space') && e.target.childElementCount === 0) {
 					e.target.appendChild(draggedCard);
 					draggedCard.setAttribute('draggable', false);
-					draggedParent.remove('current-turn');
+					draggedParent.classList.remove('current-turn');
 					cardsPlayed++;
-					console.dir(e.target);
-					console.log(cardsPlayed);
 					checkRoundFinish();
 				}
 			}
