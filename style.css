@@ -150,6 +150,19 @@ body {
     height: 125px;
 }
 
+.predict-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.predict-btn {
+    width: 40px;
+    height: auto;
+    margin-top: 2px;
+}
+
 .players__stats {
     display: flex;
     flex-direction: column;

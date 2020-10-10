@@ -16,14 +16,14 @@ let playerCardsEls = document.querySelectorAll('.players__cards');
 // It will be used as indice for cardsDealt array (cardsDealt[round])
 let valuesAndSuits;
 let cardsDealt;
-let round = 7;
+let round = 0;
 let deckId;
 let handIndex = 0;
-let playersData = [
-	{ player: 'Orange', hand: [], score: 0, handsWon: 0 },
-	{ player: 'Cyan', hand: [], score: 0, handsWon: 0 },
-	{ player: 'Magenta', hand: [], score: 0, handsWon: 0 },
-	{ player: 'Lime', hand: [], score: 0, handsWon: 0 }
+let startOfRoundData = [
+	{ player: 'Orange', hand: [] },
+	{ player: 'Cyan', hand: [] },
+	{ player: 'Magenta', hand: [] },
+	{ player: 'Lime', hand: [] }
 ];
 
 // * Prepare values of cards needed
@@ -59,7 +59,7 @@ function createRoundsArr() {
 	const twoToSeven = [ 2, 3, 4, 5, 6, 7 ];
 	const roundOneTimes = [];
 	const roundEightTimes = [];
-	for (let i = 0; i < playersData.length; i++) {
+	for (let i = 0; i < startOfRoundData.length; i++) {
 		roundOneTimes.push(1);
 		roundEightTimes.push(8);
 	}
@@ -68,14 +68,14 @@ function createRoundsArr() {
 }
 
 // * Calculate total number of cards to draw each round
-const calcCardsToDraw = () => cardsDealt[round] * playersData.length;
+const calcCardsToDraw = () => cardsDealt[round] * startOfRoundData.length;
 
 // * Calculate starting players based on selection
 function getPlayersCount() {
 	switch (playerCountSelect.value) {
 		case '2-players':
 			console.log('Getting players count...');
-			playersData.splice(2, 2);
+			startOfRoundData.splice(2, 2);
 			playerContainers[2].remove();
 			playerContainers[3].remove();
 			playerCardsEls[2].remove();
@@ -83,7 +83,7 @@ function getPlayersCount() {
 			break;
 		case '3-players':
 			console.log('Getting players count...');
-			playersData.splice(3, 1);
+			startOfRoundData.splice(3, 1);
 			playerContainers[3].remove();
 			playerCardsEls[3].remove();
 			break;
@@ -146,7 +146,7 @@ async function showCardsinDom() {
 	console.log('Showing cards to the DOM...');
 	let index = 0;
 	playerCardsEls.forEach(element => {
-		const hand = playersData[index].hand;
+		const hand = startOfRoundData[index].hand;
 		element.innerHTML = hand.map(card => `<img src="${card.image}" class="card" draggable="true" />`).join('');
 		index++;
 	});
@@ -159,8 +159,8 @@ async function dealCards(data) {
 	const cards = [ ...data ];
 	while (cards.length !== 0) {
 		const poppedCard = cards.pop();
-		playersData[handIndex].hand.push(poppedCard);
-		if (handIndex === playersData.length - 1) {
+		startOfRoundData[handIndex].hand.push(poppedCard);
+		if (handIndex === startOfRoundData.length - 1) {
 			handIndex = 0;
 		} else {
 			handIndex++;
@@ -184,8 +184,8 @@ async function drawCardsFromDeck(num) {
 
 // * Create space to play cards for each player + trump card element
 function createCardSpaces() {
-	console.log(`Created ${playersData.length} spaces for cards to be played in + trump card space`);
-	for (let player in playersData) {
+	console.log(`Created ${startOfRoundData.length} spaces for cards to be played in + trump card space`);
+	for (let player in startOfRoundData) {
 		const space = document.createElement('div');
 		space.classList.add('container__card-space');
 		playCardsContainer.appendChild(space);
@@ -201,7 +201,6 @@ async function drawTrumpCard(card) {
 	if (cardsDealt[round] !== 8) {
 		const trumpCardEl = document.querySelector('.container__trump-space');
 		trumpCardEl.innerHTML = `<img src="${card[0].image}" class="trump-card" draggable="false" />`;
-		predictHandsWon();
 	} else return console.log('no trump card this round');
 }
 
@@ -215,9 +214,12 @@ async function startRound() {
 		if (cards.length > 1) await dealCards(cards);
 		await showCardsinDom();
 		dragDrop();
-		const trump = await drawCardsFromDeck(1);
-		await drawTrumpCard(trump);
-		gameStart();
+		if (cardsDealt[round] !== 8) {
+			const trump = await drawCardsFromDeck(1);
+			await drawTrumpCard(trump);
+		}
+		await predictHandsWon();
+		//gameStart();
 	} catch (error) {
 		console.log('startRound() error ->', error);
 	}
