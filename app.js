@@ -161,7 +161,6 @@ function dealCards(data) {
 			handIndex++;
 		}
 	}
-	showCardsinDom();
 }
 
 // * Draw cards
@@ -172,8 +171,8 @@ async function drawCardsFromDeck(num) {
 		const data = await response.json();
 		console.log(`draw ${num} cards ---`, data);
 		const cards = [ ...data.cards ];
+		console.log(cards);
 		console.log('draw after');
-		if (num !== 1) dealCards(cards);
 		return cards;
 	} catch (error) {
 		console.log('drawCardsFromDeck() error ->', error);
@@ -203,21 +202,30 @@ async function drawTrumpCard(card) {
 	} else return console.log('no trump card this round');
 }
 
+// * Start round
+function startRound() {
+	shuffleDeck()
+		.then(() => drawCardsFromDeck(calcCardsToDraw()))
+		.then(data => {
+			if (data.length > 1) dealCards(data);
+			return;
+		})
+		.then(() => showCardsinDom())
+		.then(() => drawCardsFromDeck(1))
+		.then(card => drawTrumpCard(card))
+		.catch(err => console.log(err));
+}
+
 // * Event listeners
 newGameBtn.addEventListener('click', () => {
 	getPlayersCount();
 	createRoundsArr();
 	prepareDeck();
-	checkDeckId();
-	shuffleDeck()
-		.then(() => drawCardsFromDeck(calcCardsToDraw()))
-		.then(() => drawCardsFromDeck(1))
-		.then(card => drawTrumpCard(card));
-
-	menu.remove();
 	createCardSpaces();
+	menu.remove();
 	leftSide.style.display = 'flex';
 	rightSide.style.display = 'flex';
+	checkDeckId().then(() => startRound());
 });
 
 // * Modal listeners
