@@ -20,11 +20,9 @@ async function predictHandsWon(index) {
 
 	if (gameData.length === startOfRoundData.length - 1) {
 		let totalPredictions = gameData.reduce((acc, currVal) => {
-			let x = acc + currVal.predict;
-			console.log('x', x);
-			return x;
+			let total = acc + currVal.predict;
+			return total;
 		}, 0);
-		console.log('reduce', totalPredictions);
 		for (let i = 0; i <= cardsDealt[round]; i++) {
 			if (i !== cardsDealt[round] - totalPredictions) {
 				const predictButton = document.createElement('button');
