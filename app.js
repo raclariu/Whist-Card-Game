@@ -11,7 +11,6 @@ const playCardsContainer = document.querySelector('.play-area__cards-container')
 let gameplayHeadline = document.querySelector('.play-area__headline');
 let playerContainers = document.querySelectorAll('.players__container');
 let playerCardsEls = document.querySelectorAll('.players__cards');
-let lockedGame = false;
 
 // Round is uses to keep track of round and also how many cards are dealt in a specific round
 // It will be used as indice for cardsDealt array (cardsDealt[round])
@@ -29,7 +28,6 @@ let playersData = [
 
 // * Prepare values of cards needed
 function prepareDeck() {
-	console.log('prepareDeck');
 	const suits = [ 'S', 'D', 'C', 'H' ];
 	let values = [ 7, 8, 9, 0, 'A', 'J', 'Q', 'K' ];
 	if (playerCountSelect.value === '2-players') {
@@ -38,19 +36,19 @@ function prepareDeck() {
 		values.splice(0, 2);
 	}
 	valuesAndSuits = [ ...[ values ], ...[ suits ] ];
+	console.log('Prepared deck values and suits:', valuesAndSuits);
 	return valuesAndSuits;
 }
 
 // * Function that returns a string with all possible card values and suits to be used in API call
 function apiCardList() {
-	console.log('apiCardList');
 	let arr = [];
 	for (let cardValue of valuesAndSuits[0]) {
 		for (let suit of valuesAndSuits[1]) {
 			arr.push(cardValue + suit);
 		}
 	}
-
+	console.log('All values to generate a new deck with:', arr);
 	return arr.join(',');
 }
 
@@ -58,7 +56,6 @@ function apiCardList() {
 // * Each array item represents the number of cards the player will have in hand for the respective round
 // * Array length is the total number of rounds in the game
 function createRoundsArr() {
-	console.log('createRoundsArr');
 	const twoToSeven = [ 2, 3, 4, 5, 6, 7 ];
 	const roundOneTimes = [];
 	const roundEightTimes = [];
@@ -67,6 +64,7 @@ function createRoundsArr() {
 		roundEightTimes.push(8);
 	}
 	cardsDealt = [ ...roundOneTimes, ...twoToSeven, ...roundEightTimes, ...twoToSeven.reverse(), ...roundOneTimes ];
+	console.log('Create rounds array:', cardsDealt.length, 'rounds', cardsDealt);
 }
 
 // * Calculate total number of cards to draw each round
@@ -74,9 +72,9 @@ const calcCardsToDraw = () => cardsDealt[round] * playersData.length;
 
 // * Calculate starting players based on selection
 function getPlayersCount() {
-	console.log('getPlayersCound');
 	switch (playerCountSelect.value) {
 		case '2-players':
+			console.log('Getting players count...');
 			playersData.splice(2, 2);
 			playerContainers[2].remove();
 			playerContainers[3].remove();
@@ -84,11 +82,13 @@ function getPlayersCount() {
 			playerCardsEls[3].remove();
 			break;
 		case '3-players':
+			console.log('Getting players count...');
 			playersData.splice(3, 1);
 			playerContainers[3].remove();
 			playerCardsEls[3].remove();
 			break;
 		default:
+			console.log('Getting players count...');
 			break;
 	}
 	playerContainers = document.querySelectorAll('.players__container');
@@ -101,7 +101,7 @@ async function shuffleDeck() {
 	try {
 		const response = await fetch(`https://deckofcardsapi.com/api/deck/${deckId}/shuffle/`);
 		const data = await response.json();
-		console.log('shuffled ---', data);
+		console.log(`Deck ${deckId} shuffled...`, data);
 		return data;
 	} catch (error) {
 		console.log('shuffleDeck() error ->', error);
@@ -119,7 +119,7 @@ async function genNewDeck() {
 		localStorage.setItem('deck_id', deckId);
 		localStorage.setItem('player_count', playerCountSelect.value);
 
-		console.log(`generated deck for ${playerCountSelect.value} ---`, data);
+		console.log(`Generated new deck for ${playerCountSelect.value}...`, data);
 		return deckId;
 	} catch (error) {
 		console.log('genNewDeck() error ->', error);
@@ -133,7 +133,7 @@ async function checkDeckId() {
 
 	if (lsDeckId && lsPlayerCount === playerCountSelect.value) {
 		deckId = localStorage.getItem('deck_id');
-		console.log('deck already in localStorage');
+		console.log('Deck ID already in localStorage, no need to generate a new one');
 		return deckId;
 	} else {
 		const waitNewDeck = await genNewDeck();
@@ -143,7 +143,7 @@ async function checkDeckId() {
 
 // * Show cards in each container for each player
 async function showCardsinDom() {
-	console.log('showCardsInDom');
+	console.log('Showing cards to the DOM...');
 	let index = 0;
 	playerCardsEls.forEach(element => {
 		const hand = playersData[index].hand;
@@ -155,7 +155,7 @@ async function showCardsinDom() {
 
 // * Split cards to players
 async function dealCards(data) {
-	console.log('dealCards');
+	console.log(`Dealing ${cardsDealt[round]} cards to each player...`);
 	const cards = [ ...data ];
 	while (cards.length !== 0) {
 		const poppedCard = cards.pop();
@@ -175,7 +175,7 @@ async function drawCardsFromDeck(num) {
 		const response = await fetch(`https://deckofcardsapi.com/api/deck/${deckId}/draw/?count=${num}`);
 		const data = await response.json();
 		const cards = [ ...data.cards ];
-		console.log(`draw ${num} cards ---`, data);
+		console.log(`Draw ${num} cards...`, data);
 		return cards;
 	} catch (error) {
 		console.log('drawCardsFromDeck() error ->', error);
@@ -184,7 +184,7 @@ async function drawCardsFromDeck(num) {
 
 // * Create space to play cards for each player + trump card element
 function createCardSpaces() {
-	console.log('CreateCardSpaces');
+	console.log(`Created ${playersData.length} spaces for cards to be played in + trump card space`);
 	for (let player in playersData) {
 		const space = document.createElement('div');
 		space.classList.add('container__card-space');
@@ -197,7 +197,7 @@ function createCardSpaces() {
 
 // * Draw trump card if players don't use 8 cards this round
 async function drawTrumpCard(card) {
-	console.log('drawTrumpCard');
+	console.log('Showing trump card to the DOM:', card[0].value, 'of', card[0].suit);
 	if (cardsDealt[round] !== 8) {
 		const trumpCardEl = document.querySelector('.container__trump-space');
 		trumpCardEl.innerHTML = `<img src="${card[0].image}" class="trump-card" draggable="false" />`;
@@ -208,7 +208,7 @@ async function drawTrumpCard(card) {
 // * Start round
 async function startRound() {
 	try {
-		console.log('Started round');
+		console.log('Starting round...');
 		await shuffleDeck();
 		const num = calcCardsToDraw();
 		const cards = await drawCardsFromDeck(num);
@@ -224,7 +224,7 @@ async function startRound() {
 }
 
 async function startNewGame() {
-	console.log('start new game');
+	console.log('Starting new game...');
 	getPlayersCount();
 	createRoundsArr();
 	prepareDeck();

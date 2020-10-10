@@ -54,7 +54,6 @@ function onDrop(dropSpaces) {
 			e.preventDefault();
 			e.target.classList.remove('valid-space');
 			let draggedParent = draggedCard.parentElement;
-			console.dir(draggedParent);
 			if (draggedParent.classList.contains('current-turn')) {
 				if (e.target.classList.contains('container__card-space') && e.target.childElementCount === 0) {
 					e.target.appendChild(draggedCard);
@@ -69,7 +68,7 @@ function onDrop(dropSpaces) {
 }
 
 function dragDrop() {
-	console.log('dragDrop');
+	console.log('Adding drag and drop to players cards...');
 	const dropSpaces = document.querySelectorAll('.container__card-space');
 	const draggables = document.querySelectorAll('img.card[draggable="true"]');
 	onDragStart(draggables);
