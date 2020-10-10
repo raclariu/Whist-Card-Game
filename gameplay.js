@@ -1,5 +1,8 @@
-let randomPlayer = Math.floor(Math.random() * playersData.length);
-let currPlayerIndex = randomPlayer;
+let currPlayerIndex;
+const getRandomPlayer = () => {
+	console.log('getRandomPlayer');
+	currPlayerIndex = Math.floor(Math.random() * playersData.length);
+};
 let currRoundPlayedCards = 0;
 let cardsPlayed = 0;
 

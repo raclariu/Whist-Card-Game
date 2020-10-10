@@ -93,6 +93,7 @@ function getPlayersCount() {
 	}
 	playerContainers = document.querySelectorAll('.players__container');
 	playerCardsEls = document.querySelectorAll('.players__cards');
+	getRandomPlayer();
 }
 
 // * Shuffle deck function
