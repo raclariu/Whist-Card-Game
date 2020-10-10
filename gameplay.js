@@ -9,26 +9,41 @@ let cardsPlayed = 0;
 let gameData = [];
 
 async function predictHandsWon(index) {
-	console.log('index', index);
 	let playerIndex;
-	if (index === undefined) {
-		playerIndex = currPlayerIndex;
-	} else {
-		playerIndex = index;
-	}
+	index === undefined ? (playerIndex = currPlayerIndex) : (playerIndex = index);
+	console.log(playerIndex);
 
 	const currPlayerData = startOfRoundData[playerIndex];
-	const colorContainer = document.querySelector(`.${currPlayerData.player.toLowerCase()}__container`);
-	const predictContainer = document.createElement('div');
-	predictContainer.classList.add('predict-container');
-	colorContainer.appendChild(predictContainer);
-	for (let i = 0; i <= cardsDealt[round]; i++) {
-		const button = document.createElement('button');
-		button.setAttribute('value', i);
-		button.innerHTML = `${i}`;
-		button.classList.add('predict-btn');
-		predictContainer.appendChild(button);
+	const predictContainer = document.querySelector(
+		`.${currPlayerData.player.toLowerCase()}__container .predict-container`
+	);
+
+	if (gameData.length === startOfRoundData.length - 1) {
+		let totalPredictions = gameData.reduce((acc, currVal) => {
+			let x = acc + currVal.predict;
+			console.log('x', x);
+			return x;
+		}, 0);
+		console.log('reduce', totalPredictions);
+		for (let i = 0; i <= cardsDealt[round]; i++) {
+			if (i !== cardsDealt[round] - totalPredictions) {
+				const predictButton = document.createElement('button');
+				predictButton.setAttribute('value', i);
+				predictButton.innerHTML = `${i}`;
+				predictButton.classList.add('predict-btn');
+				predictContainer.appendChild(predictButton);
+			}
+		}
+	} else {
+		for (let i = 0; i <= cardsDealt[round]; i++) {
+			const predictButton = document.createElement('button');
+			predictButton.setAttribute('value', i);
+			predictButton.innerHTML = `${i}`;
+			predictButton.classList.add('predict-btn');
+			predictContainer.appendChild(predictButton);
+		}
 	}
+
 	const predictBtns = document.querySelectorAll('.predict-btn');
 	predictBtns.forEach(btn => {
 		btn.addEventListener('click', e => {
@@ -38,15 +53,11 @@ async function predictHandsWon(index) {
 }
 
 function test(e, index, playerData, predictContainer) {
-	console.log('fff', playerData);
-	console.dir(e);
-	gameData.push({ round: round, player: playerData.player.toLowerCase(), predict: e.target.value });
 	let newIndex;
-	if (index + 1 < startOfRoundData.length) {
-		newIndex = index + 1;
-	} else {
-		newIndex = 0;
-	}
+	gameData.push({ round: round, player: playerData.player.toLowerCase(), predict: parseInt(e.target.value) });
+
+	index + 1 < startOfRoundData.length ? (newIndex = index + 1) : (newIndex = 0);
+
 	predictContainer.remove();
 	if (gameData.length === startOfRoundData.length) {
 		gameStart();
