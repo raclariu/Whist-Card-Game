@@ -69,6 +69,7 @@ function onDrop(dropSpaces) {
 }
 
 function dragDrop() {
+	console.log('dragDrop');
 	const dropSpaces = document.querySelectorAll('.container__card-space');
 	const draggables = document.querySelectorAll('img.card[draggable="true"]');
 	onDragStart(draggables);

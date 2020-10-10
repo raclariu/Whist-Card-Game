@@ -29,6 +29,7 @@ let playersData = [
 
 // * Prepare values of cards needed
 function prepareDeck() {
+	console.log('prepareDeck');
 	const suits = [ 'S', 'D', 'C', 'H' ];
 	let values = [ 7, 8, 9, 0, 'A', 'J', 'Q', 'K' ];
 	if (playerCountSelect.value === '2-players') {
@@ -42,6 +43,7 @@ function prepareDeck() {
 
 // * Function that returns a string with all possible card values and suits to be used in API call
 function apiCardList() {
+	console.log('apiCardList');
 	let arr = [];
 	for (let cardValue of valuesAndSuits[0]) {
 		for (let suit of valuesAndSuits[1]) {
@@ -56,6 +58,7 @@ function apiCardList() {
 // * Each array item represents the number of cards the player will have in hand for the respective round
 // * Array length is the total number of rounds in the game
 function createRoundsArr() {
+	console.log('createRoundsArr');
 	const twoToSeven = [ 2, 3, 4, 5, 6, 7 ];
 	const roundOneTimes = [];
 	const roundEightTimes = [];
@@ -67,13 +70,11 @@ function createRoundsArr() {
 }
 
 // * Calculate total number of cards to draw each round
-const calcCardsToDraw = () => {
-	console.log('calcCardsToDraw');
-	return cardsDealt[round] * playersData.length;
-};
+const calcCardsToDraw = () => cardsDealt[round] * playersData.length;
 
 // * Calculate starting players based on selection
 function getPlayersCount() {
+	console.log('getPlayersCound');
 	switch (playerCountSelect.value) {
 		case '2-players':
 			playersData.splice(2, 2);
@@ -118,6 +119,7 @@ async function genNewDeck() {
 		localStorage.setItem('player_count', playerCountSelect.value);
 
 		console.log(`generated deck for ${playerCountSelect.value} ---`, data);
+		return deckId;
 	} catch (error) {
 		console.log('genNewDeck() error ->', error);
 	}
@@ -130,30 +132,32 @@ async function checkDeckId() {
 
 	if (lsDeckId && lsPlayerCount === playerCountSelect.value) {
 		deckId = localStorage.getItem('deck_id');
-		console.log('deck already in LS');
+		console.log('deck already in localStorage');
+		return deckId;
 	} else {
-		genNewDeck();
+		const waitNewDeck = await genNewDeck();
+		return waitNewDeck;
 	}
 }
 
 // * Show cards in each container for each player
-function showCardsinDom() {
+async function showCardsinDom() {
+	console.log('showCardsInDom');
 	let index = 0;
 	playerCardsEls.forEach(element => {
 		const hand = playersData[index].hand;
 		element.innerHTML = hand.map(card => `<img src="${card.image}" class="card" draggable="true" />`).join('');
 		index++;
 	});
-	dragDrop();
-	gameStart();
+	return true;
 }
 
 // * Split cards to players
-function dealCards(data) {
+async function dealCards(data) {
+	console.log('dealCards');
 	const cards = [ ...data ];
 	while (cards.length !== 0) {
 		const poppedCard = cards.pop();
-
 		playersData[handIndex].hand.push(poppedCard);
 		if (handIndex === playersData.length - 1) {
 			handIndex = 0;
@@ -161,18 +165,16 @@ function dealCards(data) {
 			handIndex++;
 		}
 	}
+	return true;
 }
 
 // * Draw cards
 async function drawCardsFromDeck(num) {
 	try {
-		console.log('draw');
 		const response = await fetch(`https://deckofcardsapi.com/api/deck/${deckId}/draw/?count=${num}`);
 		const data = await response.json();
-		console.log(`draw ${num} cards ---`, data);
 		const cards = [ ...data.cards ];
-		console.log(cards);
-		console.log('draw after');
+		console.log(`draw ${num} cards ---`, data);
 		return cards;
 	} catch (error) {
 		console.log('drawCardsFromDeck() error ->', error);
@@ -181,6 +183,7 @@ async function drawCardsFromDeck(num) {
 
 // * Create space to play cards for each player + trump card element
 function createCardSpaces() {
+	console.log('CreateCardSpaces');
 	for (let player in playersData) {
 		const space = document.createElement('div');
 		space.classList.add('container__card-space');
@@ -193,31 +196,34 @@ function createCardSpaces() {
 
 // * Draw trump card if players don't use 8 cards this round
 async function drawTrumpCard(card) {
-	console.log('trump');
+	console.log('drawTrumpCard');
 	if (cardsDealt[round] !== 8) {
 		const trumpCardEl = document.querySelector('.container__trump-space');
 		trumpCardEl.innerHTML = `<img src="${card[0].image}" class="trump-card" draggable="false" />`;
-		console.log('trump after');
 		predictHandsWon();
 	} else return console.log('no trump card this round');
 }
 
 // * Start round
-function startRound() {
-	shuffleDeck()
-		.then(() => drawCardsFromDeck(calcCardsToDraw()))
-		.then(data => {
-			if (data.length > 1) dealCards(data);
-			return;
-		})
-		.then(() => showCardsinDom())
-		.then(() => drawCardsFromDeck(1))
-		.then(card => drawTrumpCard(card))
-		.catch(err => console.log(err));
+async function startRound() {
+	try {
+		console.log('Started round');
+		await shuffleDeck();
+		const num = calcCardsToDraw();
+		const cards = await drawCardsFromDeck(num);
+		if (cards.length > 1) await dealCards(cards);
+		await showCardsinDom();
+		dragDrop();
+		const trump = await drawCardsFromDeck(1);
+		await drawTrumpCard(trump);
+		gameStart();
+	} catch (error) {
+		console.log('startRound() error ->', error);
+	}
 }
 
-// * Event listeners
-newGameBtn.addEventListener('click', () => {
+async function startNewGame() {
+	console.log('start new game');
 	getPlayersCount();
 	createRoundsArr();
 	prepareDeck();
@@ -225,16 +231,14 @@ newGameBtn.addEventListener('click', () => {
 	menu.remove();
 	leftSide.style.display = 'flex';
 	rightSide.style.display = 'flex';
-	checkDeckId().then(() => startRound());
-});
+	await checkDeckId();
+	startRound();
+}
+
+// * Event listeners
+newGameBtn.addEventListener('click', startNewGame);
 
 // * Modal listeners
-rulesBtn.addEventListener('click', e => {
-	modal.classList.add('show-modal');
-});
-
+rulesBtn.addEventListener('click', () => modal.classList.add('show-modal'));
 window.addEventListener('click', e => (e.target === modal ? modal.classList.remove('show-modal') : false));
-
-closeModalIcon.addEventListener('click', e => {
-	modal.classList.remove('show-modal');
-});
+closeModalIcon.addEventListener('click', () => modal.classList.remove('show-modal'));

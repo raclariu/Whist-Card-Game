@@ -28,8 +28,8 @@ function checkRoundFinish() {
 }
 
 function gameStart() {
+	console.log(playersData.length);
 	const currPlayerObj = playersData[currPlayerIndex];
-	console.log(currPlayerObj);
 	gameplayHeadline.innerHTML = `<span style="color:var(--${currPlayerObj.player.toLowerCase()}-color">${currPlayerObj.player}</span> must play a card...`;
 	const currPlayerContainer = document.querySelector(`[data-player="${currPlayerObj.player.toLowerCase()}"]`);
 	currPlayerContainer.classList.add('current-turn');
