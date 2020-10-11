@@ -6,20 +6,16 @@ const getRandomPlayer = () => {
 };
 let currRoundPlayedCards = 0;
 let cardsPlayed = 0;
-let gameData = [];
+let roundData = [];
 
 async function predictHandsWon(index) {
 	let playerIndex;
 	index === undefined ? (playerIndex = currPlayerIndex) : (playerIndex = index);
-	console.log(playerIndex);
 
 	const currPlayerData = startOfRoundData[playerIndex];
-	const predictContainer = document.querySelector(
-		`.${currPlayerData.player.toLowerCase()}__container .predict-container`
-	);
-
-	if (gameData.length === startOfRoundData.length - 1) {
-		let totalPredictions = gameData.reduce((acc, currVal) => {
+	const predictContainer = document.querySelector(`.${currPlayerData.player}__container .predict-container`);
+	if (roundData.length === startOfRoundData.length - 1) {
+		let totalPredictions = roundData.reduce((acc, currVal) => {
 			let total = acc + currVal.predict;
 			return total;
 		}, 0);
@@ -52,23 +48,23 @@ async function predictHandsWon(index) {
 
 function test(e, index, playerData, predictContainer) {
 	let newIndex;
-	gameData.push({ round: round, player: playerData.player.toLowerCase(), predict: parseInt(e.target.value) });
+	roundData.push({ round: round, player: playerData.player, predict: parseInt(e.target.value) });
 
 	index + 1 < startOfRoundData.length ? (newIndex = index + 1) : (newIndex = 0);
 
 	predictContainer.remove();
-	if (gameData.length === startOfRoundData.length) {
+	if (roundData.length === startOfRoundData.length) {
 		gameStart();
 	} else {
 		predictHandsWon(newIndex);
 	}
 }
 
-// let x = [
-// 	{
-// 		round : []
-// 	}
-// ];
+function addCardToRoundData(card) {
+	let ownerIndex = roundData.findIndex(data => data.player === card.dataset.owner);
+	roundData[ownerIndex].playedValue = card.dataset.value;
+	roundData[ownerIndex].playedSuit = card.dataset.suit;
+}
 
 function calculateScore() {
 	const dropSpaces = document.querySelectorAll('.container__card-space');
@@ -92,8 +88,8 @@ function checkRoundFinish() {
 
 function gameStart() {
 	const currPlayerObj = startOfRoundData[currPlayerIndex];
-	gameplayHeadline.innerHTML = `<span style="color:var(--${currPlayerObj.player.toLowerCase()}-color">${currPlayerObj.player}</span> must play a card...`;
-	const currPlayerContainer = document.querySelector(`[data-player="${currPlayerObj.player.toLowerCase()}"]`);
+	gameplayHeadline.innerHTML = `<span style="color:var(--${currPlayerObj.player}-color">${currPlayerObj.player}</span> must play a card...`;
+	const currPlayerContainer = document.querySelector(`[data-player="${currPlayerObj.player}"]`);
 	currPlayerContainer.classList.add('current-turn');
 	currPlayerIndex + 1 === startOfRoundData.length ? (currPlayerIndex = 0) : currPlayerIndex++;
 }

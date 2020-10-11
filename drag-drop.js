@@ -56,11 +56,64 @@ function onDrop(dropSpaces) {
 			let draggedParent = draggedCard.parentElement;
 			if (draggedParent.classList.contains('current-turn')) {
 				if (e.target.classList.contains('container__card-space') && e.target.childElementCount === 0) {
-					e.target.appendChild(draggedCard);
-					draggedCard.setAttribute('draggable', false);
-					draggedParent.classList.remove('current-turn');
-					cardsPlayed++;
-					checkRoundFinish();
+					let suit = roundData[0].playedSuit;
+					if (suit === undefined) {
+						suit = draggedCard.dataset.suit;
+					}
+					console.log('suit', suit);
+
+					if (cardsDealt[round] !== 8) {
+						if (draggedCard.dataset.suit === suit || draggedCard.dataset.suit === trumpCard.dataset.suit) {
+							e.target.appendChild(draggedCard);
+							draggedCard.setAttribute('draggable', false);
+							draggedParent.classList.remove('current-turn');
+							cardsPlayed++;
+							addCardToRoundData(draggedCard);
+							console.dir(draggedCard);
+							checkRoundFinish();
+						} else {
+							const current = [
+								...document.querySelectorAll(`[data-player="${draggedCard.dataset.owner}"] img`)
+							];
+							const filter = current.filter(
+								card => card.dataset.suit === trumpCard.dataset.suit || card.dataset.suit === suit
+							);
+							if (filter.length == 0) {
+								e.target.appendChild(draggedCard);
+								draggedCard.setAttribute('draggable', false);
+								draggedParent.classList.remove('current-turn');
+								cardsPlayed++;
+								addCardToRoundData(draggedCard);
+								console.dir(draggedCard);
+								checkRoundFinish();
+							}
+						}
+					} else {
+						console.log('here');
+						if (draggedCard.dataset.suit === suit) {
+							e.target.appendChild(draggedCard);
+							draggedCard.setAttribute('draggable', false);
+							draggedParent.classList.remove('current-turn');
+							cardsPlayed++;
+							addCardToRoundData(draggedCard);
+							console.dir(draggedCard);
+							checkRoundFinish();
+						} else {
+							const current = [
+								...document.querySelectorAll(`[data-player="${draggedCard.dataset.owner}"] img`)
+							];
+							const filter = current.filter(card => card.dataset.suit === suit);
+							if (filter.length == 0) {
+								e.target.appendChild(draggedCard);
+								draggedCard.setAttribute('draggable', false);
+								draggedParent.classList.remove('current-turn');
+								cardsPlayed++;
+								addCardToRoundData(draggedCard);
+								console.dir(draggedCard);
+								checkRoundFinish();
+							}
+						}
+					}
 				}
 			}
 		});

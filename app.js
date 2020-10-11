@@ -16,14 +16,15 @@ let playerCardsEls = document.querySelectorAll('.players__cards');
 // It will be used as indice for cardsDealt array (cardsDealt[round])
 let valuesAndSuits;
 let cardsDealt;
-let round = 6;
+let round = 5;
 let deckId;
+let trumpCard;
 let handIndex = 0;
 let startOfRoundData = [
-	{ player: 'Orange', hand: [] },
-	{ player: 'Cyan', hand: [] },
-	{ player: 'Magenta', hand: [] },
-	{ player: 'Lime', hand: [] }
+	{ player: 'orange', hand: [] },
+	{ player: 'cyan', hand: [] },
+	{ player: 'magenta', hand: [] },
+	{ player: 'lime', hand: [] }
 ];
 
 // * Prepare values of cards needed
@@ -159,7 +160,8 @@ async function showCardsinDom() {
 		playerEl.innerHTML = playerHand
 			.map(
 				card =>
-					`<img src="${card.image}" class="card" data-suit="${card.suit.toLowerCase()}" data-value="${card.value}" draggable="true" />`
+					`<img src="${card.image}" class="card" data-owner="${startOfRoundData[index]
+						.player}" data-suit="${card.suit.toLowerCase()}" data-value="${card.value}" draggable="true" />`
 			)
 			.join('');
 		index++;
@@ -213,8 +215,15 @@ function createCardSpaces() {
 async function drawTrumpCard(card) {
 	console.log('Showing trump card to the DOM:', card[0].value, 'of', card[0].suit);
 	if (cardsDealt[round] !== 8) {
+		if (card[0].value === 'JACK') card[0].value = 12;
+		if (card[0].value === 'QUEEN') card[0].value = 13;
+		if (card[0].value === 'KING') card[0].value = 14;
+		if (card[0].value === 'ACE') card[0].value = 15;
 		const trumpCardEl = document.querySelector('.container__trump-space');
-		trumpCardEl.innerHTML = `<img src="${card[0].image}" class="trump-card" draggable="false" />`;
+		trumpCardEl.innerHTML = `<img src="${card[0]
+			.image}" class="trump-card" data-owner="trump" data-suit="${card[0].suit.toLowerCase()}" data-value="${card[0]
+			.value}" draggable="false" />`;
+		trumpCard = document.querySelector('.trump-card');
 	} else return console.log('no trump card this round');
 }
 
