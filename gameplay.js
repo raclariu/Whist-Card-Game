@@ -64,6 +64,12 @@ function test(e, index, playerData, predictContainer) {
 	}
 }
 
+// let x = [
+// 	{
+// 		round : []
+// 	}
+// ];
+
 function calculateScore() {
 	const dropSpaces = document.querySelectorAll('.container__card-space');
 	gameplayHeadline.innerHTML = `Calculating score...`;

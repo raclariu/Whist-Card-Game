@@ -145,9 +145,23 @@ async function checkDeckId() {
 async function showCardsinDom() {
 	console.log('Showing cards to the DOM...');
 	let index = 0;
-	playerCardsEls.forEach(element => {
-		const hand = startOfRoundData[index].hand;
-		element.innerHTML = hand.map(card => `<img src="${card.image}" class="card" draggable="true" />`).join('');
+
+	playerCardsEls.forEach(playerEl => {
+		const playerHand = startOfRoundData[index].hand;
+
+		for (let card of startOfRoundData[index].hand) {
+			if (card.value === 'JACK') card.value = 12;
+			if (card.value === 'QUEEN') card.value = 13;
+			if (card.value === 'KING') card.value = 14;
+			if (card.value === 'ACE') card.value = 15;
+		}
+
+		playerEl.innerHTML = playerHand
+			.map(
+				card =>
+					`<img src="${card.image}" class="card" data-suit="${card.suit.toLowerCase()}" data-value="${card.value}" draggable="true" />`
+			)
+			.join('');
 		index++;
 	});
 	return true;
