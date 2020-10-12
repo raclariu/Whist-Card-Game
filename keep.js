@@ -68,36 +68,40 @@ function onDrop(dropSpaces) {
 			if (draggedParent.classList.contains('current-turn')) {
 				if (e.target.classList.contains('container__card-space') && e.target.childElementCount === 0) {
 					const draggedSuit = draggedCard.dataset.suit;
-					// const checkDropSpacesFull = document.querySelectorAll('.container__card-space img');
-					// console.log(checkDropSpacesFull.length);
-					suit = roundData[0].playedSuit;
-
+					const trumpSuit = trumpCard.dataset.suit;
+					let suit = roundData[0].playedSuit;
 					if (suit === undefined) {
-						suit = draggedSuit;
+						suit = draggedCard.dataset.suit;
 					}
 					console.log('suit', suit);
 
-					const allCurrPlayerCards = [
-						...document.querySelectorAll(`[data-player="${draggedCard.dataset.owner}"] img`)
-					];
-					const filterSuit = allCurrPlayerCards.filter(card => card.dataset.suit === suit);
-
 					if (cardsDealt[round] !== 8) {
-						const trumpSuit = trumpCard.dataset.suit;
-						const filterTrump = allCurrPlayerCards.filter(card => card.dataset.suit === trumpSuit);
-						if (draggedSuit === suit) {
+						if (draggedSuit === suit || draggedSuit === trumpSuit) {
 							appendCard(e);
-						} else if (filterSuit.length === 0 && draggedSuit === trumpSuit) {
-							appendCard(e);
-						} else if (filterSuit.length === 0 && filterTrump.length === 0) {
-							appendCard(e);
+						} else {
+							const current = [
+								...document.querySelectorAll(`[data-player="${draggedCard.dataset.owner}"] img`)
+							];
+							const filterSuit = current.filter(card => card.dataset.suit === suit);
+							const filterTrump = current.filter(card => card.dataset.suit === trumpSuit);
+							if (filterSuit.length === 0) {
+								if (filterTrump.length === 0) {
+									appendCard(e);
+								}
+							}
 						}
-					}
-					if (cardsDealt[round] === 8) {
-						if (draggedSuit === suit) {
+					} else {
+						console.log('here');
+						if (draggedCard.dataset.suit === suit) {
 							appendCard(e);
-						} else if (filterSuit.length === 0) {
-							appendCard(e);
+						} else {
+							const current = [
+								...document.querySelectorAll(`[data-player="${draggedCard.dataset.owner}"] img`)
+							];
+							const filter = current.filter(card => card.dataset.suit === suit);
+							if (filter.length === 0) {
+								appendCard(e);
+							}
 						}
 					}
 				}

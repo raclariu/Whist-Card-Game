@@ -7,6 +7,7 @@ const getRandomPlayer = () => {
 let currRoundPlayedCards = 0;
 let cardsPlayed = 0;
 let roundData = [];
+let allData = [];
 
 async function predictHandsWon(index) {
 	let playerIndex;
@@ -48,7 +49,13 @@ async function predictHandsWon(index) {
 
 function test(e, index, playerData, predictContainer) {
 	let newIndex;
-	roundData.push({ round: round, player: playerData.player, predict: parseInt(e.target.value) });
+	roundData.push({
+		round    : round,
+		player   : playerData.player,
+		predict  : parseInt(e.target.value),
+		handsWon : 0,
+		score    : 0
+	});
 
 	index + 1 < startOfRoundData.length ? (newIndex = index + 1) : (newIndex = 0);
 
@@ -74,9 +81,23 @@ function calculateScore() {
 		dropSpaces.forEach(space => {
 			space.children[0].remove();
 		});
+		// >> HEre, later on, if no players have any cards left, start a new round instead of gameStart()
 		gameStart();
 	}, 3000);
-	// * Here
+	// * When each player finished playing a card, calculate hands won
+	const filter = roundData
+		.filter(player => player.playedSuit === trumpCard.dataset.suit)
+		.sort((a, b) => b.playedValue - a.playedValue);
+	if (filter.length === 0) {
+		const filter2 = roundData
+			.filter(player => player.playedSuit === roundData[0].playedValue)
+			.sort((a, b) => b.playedValue - a.playedValue);
+		console.log('f2', filter2);
+	}
+	// roundData.forEach(player => {
+	// 	player.playedSuit = undefined;
+	// 	player.playedValue = undefined;
+	// });
 }
 
 function checkRoundFinish() {
