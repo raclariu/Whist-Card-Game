@@ -16,7 +16,7 @@ let playerCardsEls = document.querySelectorAll('.players__cards');
 // It will be used as indice for cardsDealt array (cardsDealt[round])
 let valuesAndSuits;
 let cardsDealt;
-let round = 6;
+let round = 0;
 let deckId;
 let trumpCard;
 let handIndex = 0;
@@ -93,7 +93,7 @@ function getPlayersCount() {
 			break;
 	}
 	playerContainers = document.querySelectorAll('.players__container');
-	playerCardsEls = document.querySelectorAll('.players__cards');
+	playerCardsEls = [ ...document.querySelectorAll('.players__cards') ];
 	getRandomPlayer();
 }
 
@@ -241,8 +241,7 @@ async function startRound() {
 			const trump = await drawCardsFromDeck(1);
 			await drawTrumpCard(trump);
 		}
-		await predictHandsWon();
-		//gameStart();
+		predictHandsWon();
 	} catch (error) {
 		console.log('startRound() error ->', error);
 	}

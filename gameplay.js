@@ -9,12 +9,20 @@ let cardsPlayed = 0;
 let roundData = [];
 let allData = [];
 
-async function predictHandsWon(index) {
+async function predictHandsWon(newIndex) {
 	let playerIndex;
-	index === undefined ? (playerIndex = currPlayerIndex) : (playerIndex = index);
+	newIndex === undefined ? (playerIndex = currPlayerIndex) : (playerIndex = newIndex);
+	console.log('pind', playerIndex);
 
 	const currPlayerData = startOfRoundData[playerIndex];
-	const predictContainer = document.querySelector(`.${currPlayerData.player}__container .predict-container`);
+	console.log('currPlayerData', currPlayerData);
+	const currPlayerName = currPlayerData.player;
+	const predictContainer = document.getElementById(`${currPlayerName}-predict`);
+	console.log('.${currPlayerData.player}', currPlayerData.player);
+	console.log('.${currPlayerName}', currPlayerName);
+	console.log('playerIndex', playerIndex);
+
+	console.dir(predictContainer);
 	if (roundData.length === startOfRoundData.length - 1) {
 		let totalPredictions = roundData.reduce((acc, currVal) => {
 			let total = acc + currVal.predict;
@@ -59,7 +67,7 @@ function test(e, index, playerData, predictContainer) {
 
 	index + 1 < startOfRoundData.length ? (newIndex = index + 1) : (newIndex = 0);
 
-	predictContainer.remove();
+	predictContainer.innerHTML = '';
 	if (roundData.length === startOfRoundData.length) {
 		gameStart();
 	} else {
@@ -74,6 +82,7 @@ function addCardToRoundData(card) {
 }
 
 function calculateScore() {
+	let indexCopy = currPlayerIndex;
 	const dropSpaces = document.querySelectorAll('.container__card-space');
 	gameplayHeadline.innerHTML = `Calculating score...`;
 	cardsPlayed = 0;
@@ -82,22 +91,44 @@ function calculateScore() {
 			space.children[0].remove();
 		});
 		// >> HEre, later on, if no players have any cards left, start a new round instead of gameStart()
-		gameStart();
+		const checkEmptyHands = playerCardsEls.filter(element => element.childElementCount === 0);
+		console.log('empty hands', checkEmptyHands);
+		if (checkEmptyHands.length === startOfRoundData.length) {
+			console.log('NEW ROUND');
+			allData.push(roundData);
+			roundData = [];
+			startOfRoundData.forEach(player => (player.hand = []));
+			round++;
+			indexCopy + 1 === startOfRoundData.length ? (indexCopy = 0) : indexCopy++;
+			currPlayerIndex = indexCopy;
+			console.log('indexcopy', indexCopy);
+			startRound();
+		} else {
+			console.log('NEW TURN');
+			roundData.forEach(player => {
+				player.playedSuit = undefined;
+				player.playedValue = undefined;
+			});
+			gameStart();
+		}
 	}, 3000);
 	// * When each player finished playing a card, calculate hands won
-	const filter = roundData
+	const filterTrump = roundData
 		.filter(player => player.playedSuit === trumpCard.dataset.suit)
 		.sort((a, b) => b.playedValue - a.playedValue);
-	if (filter.length === 0) {
-		const filter2 = roundData
-			.filter(player => player.playedSuit === roundData[0].playedValue)
+
+	if (filterTrump.length === 0) {
+		const filterSuit = roundData
+			.filter(player => player.playedSuit === roundData[0].playedSuit)
 			.sort((a, b) => b.playedValue - a.playedValue);
-		console.log('f2', filter2);
+		const index = roundData.findIndex(playerObj => playerObj.player === filterSuit[0].player);
+		roundData[index].handsWon++;
+		//currPlayerIndex = index;
+	} else {
+		const index = roundData.findIndex(playerObj => playerObj.player === filterTrump[0].player);
+		roundData[index].handsWon++;
+		//currPlayerIndex = index;
 	}
-	// roundData.forEach(player => {
-	// 	player.playedSuit = undefined;
-	// 	player.playedValue = undefined;
-	// });
 }
 
 function checkRoundFinish() {
