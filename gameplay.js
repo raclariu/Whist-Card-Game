@@ -109,6 +109,7 @@ async function calculateScore() {
 		if (checkEmptyHands.length === startOfRoundData.length) {
 			console.log('NEW ROUND');
 			updateScore();
+			console.log(roundData);
 			allData.push(roundData);
 			roundData = [];
 			startOfRoundData.forEach(player => (player.hand = []));
