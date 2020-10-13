@@ -68,7 +68,8 @@ function test(e, index, playerData, predictContainer) {
 
 	predictContainer.innerHTML = '';
 	if (roundData.length === startOfRoundData.length) {
-		gameStart();
+		currPlayerIndex = 0;
+		gameStart(currPlayerIndex);
 	} else {
 		predictHandsWon(newIndex);
 	}
@@ -97,6 +98,7 @@ function calculateScore() {
 			roundData = [];
 			startOfRoundData.forEach(player => (player.hand = []));
 			round++;
+			suit = undefined;
 			indexCopyRound + 1 === startOfRoundData.length ? (indexCopyRound = 0) : indexCopyRound++;
 			currPlayerIndex = indexCopyRound;
 			console.log('indexcopyround', indexCopyRound);
@@ -106,12 +108,14 @@ function calculateScore() {
 			console.log('indexCopyRound', indexCopyRound);
 			console.log('indexCopyTurn', indexCopyTurn);
 			console.log('currPlayerIndex', currPlayerIndex);
+			suit = undefined;
 			roundData.forEach(player => {
 				player.playedSuit = undefined;
 				player.playedValue = undefined;
 			});
 			currPlayerIndex = indexCopyTurn;
-			gameStart();
+			console.log('currPlayerIndex AFTER', currPlayerIndex);
+			gameStart(indexCopyTurn);
 		}
 	}, 3000);
 	// * When each player finished playing a card, calculate hands won
@@ -139,11 +143,13 @@ function checkRoundFinish() {
 	if (cardsPlayed === startOfRoundData.length) {
 		return calculateScore();
 	}
-	gameStart();
+	gameStart(currPlayerIndex);
 }
 
-function gameStart() {
-	const currPlayerObj = startOfRoundData[currPlayerIndex];
+function gameStart(index) {
+	console.log('index game start', index);
+	const currPlayerObj = roundData[index];
+
 	gameplayHeadline.innerHTML = `<span style="color:var(--${currPlayerObj.player}-color">${currPlayerObj.player}</span> must play a card...`;
 	const currPlayerContainer = document.querySelector(`[data-player="${currPlayerObj.player}"]`);
 	currPlayerContainer.classList.add('current-turn');

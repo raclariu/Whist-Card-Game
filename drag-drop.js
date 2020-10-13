@@ -1,5 +1,6 @@
 // Drag and Drop
 let draggedCard;
+let suit;
 
 function onDragStart(draggables) {
 	draggables.forEach(draggable => {
@@ -68,10 +69,6 @@ function onDrop(dropSpaces) {
 			if (draggedParent.classList.contains('current-turn')) {
 				if (e.target.classList.contains('container__card-space') && e.target.childElementCount === 0) {
 					const draggedSuit = draggedCard.dataset.suit;
-					// const checkDropSpacesFull = document.querySelectorAll('.container__card-space img');
-					// console.log(checkDropSpacesFull.length);
-					suit = roundData[0].playedSuit;
-
 					if (suit === undefined) {
 						suit = draggedSuit;
 					}
