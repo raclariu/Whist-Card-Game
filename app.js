@@ -16,7 +16,7 @@ let playerCardsEls = document.querySelectorAll('.players__cards');
 // It will be used as indice for cardsDealt array (cardsDealt[round])
 let valuesAndSuits;
 let cardsDealt;
-let round = 5;
+let round = 10;
 let deckId;
 let trumpCard;
 let handIndex = 0;

@@ -21,7 +21,6 @@ async function predictHandsWon(newIndex) {
 	const currPlayerName = currPlayerData.player;
 	const predictContainer = document.getElementById(`${currPlayerName}-predict`);
 
-	console.dir(predictContainer);
 	if (roundData.length === startOfRoundData.length - 1) {
 		let totalPredictions = roundData.reduce((acc, currVal) => {
 			let total = acc + currVal.predict;
@@ -49,12 +48,12 @@ async function predictHandsWon(newIndex) {
 	const predictBtns = document.querySelectorAll('.predict-btn');
 	predictBtns.forEach(btn => {
 		btn.addEventListener('click', e => {
-			test(e, playerIndex, currPlayerData, predictContainer);
+			predictClick(e, playerIndex, currPlayerData, predictContainer);
 		});
 	});
 }
 
-function test(e, index, playerData, predictContainer) {
+function predictClick(e, playerIndex, playerData, predictContainer) {
 	let newIndex;
 	roundData.push({
 		round    : round,
@@ -64,7 +63,7 @@ function test(e, index, playerData, predictContainer) {
 		score    : 0
 	});
 
-	index + 1 < startOfRoundData.length ? (newIndex = index + 1) : (newIndex = 0);
+	playerIndex + 1 < startOfRoundData.length ? (newIndex = playerIndex + 1) : (newIndex = 0);
 
 	predictContainer.innerHTML = '';
 	if (roundData.length === startOfRoundData.length) {
@@ -81,7 +80,22 @@ function addCardToRoundData(card) {
 	roundData[ownerIndex].playedSuit = card.dataset.suit;
 }
 
-function calculateScore() {
+function updateScore() {
+	roundData.forEach(player => {
+		if (player.predict === player.handsWon) {
+			let calculatePlus = 5 + player.predict;
+			player.score += calculatePlus;
+		} else if (player.predict - player.handsWon < 0) {
+			let calculateMinus = player.predict - player.handsWon;
+			player.score += calculateMinus;
+		} else {
+			let calculateMinus = player.handsWon - player.predict;
+			player.score += calculateMinus;
+		}
+	});
+}
+
+async function calculateScore() {
 	const dropSpaces = document.querySelectorAll('.container__card-space');
 	gameplayHeadline.innerHTML = `Calculating score...`;
 	cardsPlayed = 0;
@@ -89,11 +103,12 @@ function calculateScore() {
 		dropSpaces.forEach(space => {
 			space.children[0].remove();
 		});
-		// >> HEre, later on, if no players have any cards left, start a new round instead of gameStart()
+
 		const checkEmptyHands = playerCardsEls.filter(element => element.childElementCount === 0);
 		console.log('empty hands', checkEmptyHands);
 		if (checkEmptyHands.length === startOfRoundData.length) {
 			console.log('NEW ROUND');
+			updateScore();
 			allData.push(roundData);
 			roundData = [];
 			startOfRoundData.forEach(player => (player.hand = []));
@@ -101,41 +116,53 @@ function calculateScore() {
 			suit = undefined;
 			indexCopyRound + 1 === startOfRoundData.length ? (indexCopyRound = 0) : indexCopyRound++;
 			currPlayerIndex = indexCopyRound;
-			console.log('indexcopyround', indexCopyRound);
 			startRound();
 		} else {
 			console.log('NEW TURN');
-			console.log('indexCopyRound', indexCopyRound);
-			console.log('indexCopyTurn', indexCopyTurn);
-			console.log('currPlayerIndex', currPlayerIndex);
+			roundData.forEach(player => {
+				console.log(player.player, player.playedSuit, player.playedValue);
+			});
 			suit = undefined;
 			roundData.forEach(player => {
 				player.playedSuit = undefined;
 				player.playedValue = undefined;
 			});
 			currPlayerIndex = indexCopyTurn;
-			console.log('currPlayerIndex AFTER', currPlayerIndex);
 			gameStart(indexCopyTurn);
 		}
 	}, 3000);
 	// * When each player finished playing a card, calculate hands won
-	const filterTrump = roundData
-		.filter(player => player.playedSuit === trumpCard.dataset.suit)
-		.sort((a, b) => b.playedValue - a.playedValue);
-	console.log('filterTrump', filterTrump);
 
-	if (filterTrump.length === 0) {
+	if (cardsDealt[round] === 8) {
+		console.log('SUIT', suit);
 		const filterSuit = roundData
-			.filter(player => player.playedSuit === roundData[0].playedSuit)
+			.filter(player => player.playedSuit === suit)
 			.sort((a, b) => b.playedValue - a.playedValue);
-		console.log('filterSuit', filterSuit);
+		console.log('WINNER', filterSuit[0].player, filterSuit);
 		const indexWinnerBySuit = roundData.findIndex(playerObj => playerObj.player === filterSuit[0].player);
 		roundData[indexWinnerBySuit].handsWon++;
 		indexCopyTurn = indexWinnerBySuit;
-	} else {
-		const indexWinnerByTrump = roundData.findIndex(playerObj => playerObj.player === filterTrump[0].player);
-		roundData[indexWinnerByTrump].handsWon++;
-		indexCopyTurn = indexWinnerByTrump;
+	}
+
+	if (cardsDealt[round] !== 8) {
+		const filterTrump = roundData
+			.filter(player => player.playedSuit === trumpCard.dataset.suit)
+			.sort((a, b) => b.playedValue - a.playedValue);
+		console.log('filterTrump', filterTrump);
+
+		if (filterTrump.length === 0) {
+			const filterSuit = roundData
+				.filter(player => player.playedSuit === suit)
+				.sort((a, b) => b.playedValue - a.playedValue);
+			console.log('filterSuit', filterSuit);
+			const indexWinnerBySuit = roundData.findIndex(playerObj => playerObj.player === filterSuit[0].player);
+			roundData[indexWinnerBySuit].handsWon++;
+			indexCopyTurn = indexWinnerBySuit;
+		} else {
+			const indexWinnerByTrump = roundData.findIndex(playerObj => playerObj.player === filterTrump[0].player);
+			roundData[indexWinnerByTrump].handsWon++;
+			indexCopyTurn = indexWinnerByTrump;
+		}
 	}
 }
 
@@ -147,7 +174,6 @@ function checkRoundFinish() {
 }
 
 function gameStart(index) {
-	console.log('index game start', index);
 	const currPlayerObj = roundData[index];
 
 	gameplayHeadline.innerHTML = `<span style="color:var(--${currPlayerObj.player}-color">${currPlayerObj.player}</span> must play a card...`;

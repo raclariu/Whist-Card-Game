@@ -184,7 +184,7 @@ body {
 .players__stats {
     display: flex;
     flex-direction: column;
-    justify-content: space-evenly;
+    justify-content: center;
     align-items: center;
     height: 100%;
     margin: auto;
@@ -196,6 +196,7 @@ body {
     align-items: center;
     width: 50px;
     height: 50px;
+    margin-top: 5px;
     font-size: 20px;
     background-color: rgb(221, 221, 221);
     border-radius: 10px;
