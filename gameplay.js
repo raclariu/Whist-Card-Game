@@ -1,6 +1,11 @@
 let currPlayerIndex;
 let indexCopyTurn;
 let indexCopyRound;
+let currRoundPlayedCards = 0;
+let cardsPlayed = 0;
+let roundData = [];
+let allData = [];
+
 const getRandomPlayer = () => {
 	console.log('Player count:', startOfRoundData.length);
 	currPlayerIndex = Math.floor(Math.random() * startOfRoundData.length);
@@ -8,10 +13,6 @@ const getRandomPlayer = () => {
 	indexCopyRound = currPlayerIndex;
 	console.log('Get random starting player index:', currPlayerIndex);
 };
-let currRoundPlayedCards = 0;
-let cardsPlayed = 0;
-let roundData = [];
-let allData = [];
 
 async function predictHandsWon(newIndex) {
 	let playerIndex;
@@ -55,10 +56,13 @@ async function predictHandsWon(newIndex) {
 
 function predictClick(e, playerIndex, playerData, predictContainer) {
 	let newIndex;
+	const prediction = parseInt(e.target.value);
+	const currPredictionEl = document.querySelector(`.${playerData.player}__prediction`);
+	currPredictionEl.innerHTML = prediction;
 	roundData.push({
 		round    : round,
 		player   : playerData.player,
-		predict  : parseInt(e.target.value),
+		predict  : prediction,
 		handsWon : 0,
 		score    : 0
 	});
@@ -95,6 +99,16 @@ function updateScore() {
 	});
 }
 
+function updDataRoundEnd() {
+	console.log('afterRoundEnd', roundData);
+	const orangeH = document.querySelector('.orange__hands-won');
+	orangeH.innerHTML = 123;
+}
+
+function updDataTurnEnd() {
+	console.log('afterTurnEnd');
+}
+
 async function calculateScore() {
 	const dropSpaces = document.querySelectorAll('.container__card-space');
 	gameplayHeadline.innerHTML = `Calculating score...`;
@@ -109,7 +123,7 @@ async function calculateScore() {
 		if (checkEmptyHands.length === startOfRoundData.length) {
 			console.log('NEW ROUND');
 			updateScore();
-			console.log(roundData);
+			updDataRoundEnd();
 			allData.push(roundData);
 			roundData = [];
 			startOfRoundData.forEach(player => (player.hand = []));
@@ -120,6 +134,7 @@ async function calculateScore() {
 			startRound();
 		} else {
 			console.log('NEW TURN');
+			updDataTurnEnd();
 			roundData.forEach(player => {
 				console.log(player.player, player.playedSuit, player.playedValue);
 			});
