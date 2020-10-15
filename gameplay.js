@@ -100,9 +100,35 @@ function updateScore() {
 }
 
 function updDataRoundEnd() {
-	console.log('afterRoundEnd', roundData);
-	const orangeH = document.querySelector('.orange__hands-won');
-	orangeH.innerHTML = 123;
+	const playerPredictionSpan = document.querySelectorAll('.players__prediction');
+	const playerHandsWonSpan = document.querySelectorAll('.players__hands-won');
+	playerPredictionSpan.forEach(span => (span.innerHTML = '?'));
+	playerHandsWonSpan.forEach(span => (span.innerHTML = '?'));
+	gameplayHeadline.innerHTML = 'Predict how many hands you will win...';
+	// const y = allData.filter(arr=>arr.filter(obj=>{
+	// 	let arr = []
+	// 	arr.push(obj)
+	// 	console.log(arr);
+	// }))
+	let orangeScore = 0;
+	let cyanScore = 0;
+	let magentaScore = 0;
+	let limeScore = 0;
+	const orange = document.querySelector('.orange__score');
+	const cyan = document.querySelector('.cyan__score');
+	const magenta = document.querySelector('.magenta__score');
+	const lime = document.querySelector('.lime__score');
+
+	for (let arr of allData) {
+		arr.filter(obj => (obj.player === 'orange' ? (orangeScore += obj.score) : ''));
+		arr.filter(obj => (obj.player === 'cyan' ? (cyanScore += obj.score) : ''));
+		arr.filter(obj => (obj.player === 'magenta' ? (magentaScore += obj.score) : ''));
+		arr.filter(obj => (obj.player === 'lime' ? (limeScore += obj.score) : ''));
+	}
+	orange.innerHTML = orangeScore;
+	cyan.innerHTML = cyanScore;
+	magenta !== null ? (magenta.innerHTML = magentaScore) : '';
+	lime !== null ? (lime.innerHTML = limeScore) : '';
 }
 
 function updDataTurnEnd() {
@@ -111,7 +137,8 @@ function updDataTurnEnd() {
 
 async function calculateScore() {
 	const dropSpaces = document.querySelectorAll('.container__card-space');
-	gameplayHeadline.innerHTML = `Calculating score...`;
+	let filterSuit;
+	let filterTrump;
 	cardsPlayed = 0;
 	setTimeout(() => {
 		dropSpaces.forEach(space => {
@@ -123,8 +150,8 @@ async function calculateScore() {
 		if (checkEmptyHands.length === startOfRoundData.length) {
 			console.log('NEW ROUND');
 			updateScore();
-			updDataRoundEnd();
 			allData.push(roundData);
+			updDataRoundEnd();
 			roundData = [];
 			startOfRoundData.forEach(player => (player.hand = []));
 			round++;
@@ -149,36 +176,31 @@ async function calculateScore() {
 	}, 3000);
 	// * When each player finished playing a card, calculate hands won
 
-	if (cardsDealt[round] === 8) {
-		console.log('SUIT', suit);
-		const filterSuit = roundData
-			.filter(player => player.playedSuit === suit)
+	filterSuit = roundData.filter(player => player.playedSuit === suit).sort((a, b) => b.playedValue - a.playedValue);
+
+	if (trumpCard) {
+		filterTrump = roundData
+			.filter(player => player.playedSuit === trumpCard.dataset.suit)
 			.sort((a, b) => b.playedValue - a.playedValue);
+	}
+
+	if (trumpCard === undefined) {
 		console.log('WINNER', filterSuit[0].player, filterSuit);
 		const indexWinnerBySuit = roundData.findIndex(playerObj => playerObj.player === filterSuit[0].player);
 		roundData[indexWinnerBySuit].handsWon++;
+		gameplayHeadline.innerHTML = `<span style="color:var(--${roundData[indexWinnerBySuit]
+			.player}-color">🎉 ${roundData[indexWinnerBySuit].player}</span> won this round 🎉`;
+		const winnerPredictionSpan = document.querySelector(`.${roundData[indexWinnerBySuit].player}__hands-won`);
+		winnerPredictionSpan.innerHTML = roundData[indexWinnerBySuit].handsWon;
 		indexCopyTurn = indexWinnerBySuit;
-	}
-
-	if (cardsDealt[round] !== 8) {
-		const filterTrump = roundData
-			.filter(player => player.playedSuit === trumpCard.dataset.suit)
-			.sort((a, b) => b.playedValue - a.playedValue);
-		console.log('filterTrump', filterTrump);
-
-		if (filterTrump.length === 0) {
-			const filterSuit = roundData
-				.filter(player => player.playedSuit === suit)
-				.sort((a, b) => b.playedValue - a.playedValue);
-			console.log('filterSuit', filterSuit);
-			const indexWinnerBySuit = roundData.findIndex(playerObj => playerObj.player === filterSuit[0].player);
-			roundData[indexWinnerBySuit].handsWon++;
-			indexCopyTurn = indexWinnerBySuit;
-		} else {
-			const indexWinnerByTrump = roundData.findIndex(playerObj => playerObj.player === filterTrump[0].player);
-			roundData[indexWinnerByTrump].handsWon++;
-			indexCopyTurn = indexWinnerByTrump;
-		}
+	} else {
+		const indexWinnerByTrump = roundData.findIndex(playerObj => playerObj.player === filterTrump[0].player);
+		roundData[indexWinnerByTrump].handsWon++;
+		gameplayHeadline.innerHTML = `<span style="color:var(--${roundData[indexWinnerByTrump]
+			.player}-color">🎉 ${roundData[indexWinnerByTrump].player}</span> won this round 🎉`;
+		const winnerPredictionSpan = document.querySelector(`.${roundData[indexWinnerByTrump].player}__hands-won`);
+		winnerPredictionSpan.innerHTML = roundData[indexWinnerByTrump].handsWon;
+		indexCopyTurn = indexWinnerByTrump;
 	}
 }
 
