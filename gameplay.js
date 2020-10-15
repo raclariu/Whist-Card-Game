@@ -175,31 +175,34 @@ async function calculateScore() {
 		}
 	}, 3000);
 	// * When each player finished playing a card, calculate hands won
-
 	filterSuit = roundData.filter(player => player.playedSuit === suit).sort((a, b) => b.playedValue - a.playedValue);
 
 	if (trumpCard) {
 		filterTrump = roundData
 			.filter(player => player.playedSuit === trumpCard.dataset.suit)
 			.sort((a, b) => b.playedValue - a.playedValue);
+		// console.log(trumpCards);
+		// trumpCards.length > 0 ? (filterTrump = trumpCards) : undefined;
+		// console.log(filterTrump);
 	}
 
-	if (trumpCard === undefined) {
-		console.log('WINNER', filterSuit[0].player, filterSuit);
+	if (trumpCard === undefined || filterTrump.length === 0) {
+		console.log('win by suit', filterSuit);
 		const indexWinnerBySuit = roundData.findIndex(playerObj => playerObj.player === filterSuit[0].player);
-		roundData[indexWinnerBySuit].handsWon++;
-		gameplayHeadline.innerHTML = `<span style="color:var(--${roundData[indexWinnerBySuit]
-			.player}-color">🎉 ${roundData[indexWinnerBySuit].player}</span> won this round 🎉`;
-		const winnerPredictionSpan = document.querySelector(`.${roundData[indexWinnerBySuit].player}__hands-won`);
-		winnerPredictionSpan.innerHTML = roundData[indexWinnerBySuit].handsWon;
+		const winner = roundData[indexWinnerBySuit];
+		winner.handsWon++;
+		gameplayHeadline.innerHTML = `<span style="color:var(--${winner.player}-color">🎉 ${winner.player}</span> won this round 🎉`;
+		const winnerPredictionSpan = document.querySelector(`.${winner.player}__hands-won`);
+		winnerPredictionSpan.innerHTML = winner.handsWon;
 		indexCopyTurn = indexWinnerBySuit;
 	} else {
+		console.log('FILTERTRUMP', filterTrump);
 		const indexWinnerByTrump = roundData.findIndex(playerObj => playerObj.player === filterTrump[0].player);
-		roundData[indexWinnerByTrump].handsWon++;
-		gameplayHeadline.innerHTML = `<span style="color:var(--${roundData[indexWinnerByTrump]
-			.player}-color">🎉 ${roundData[indexWinnerByTrump].player}</span> won this round 🎉`;
-		const winnerPredictionSpan = document.querySelector(`.${roundData[indexWinnerByTrump].player}__hands-won`);
-		winnerPredictionSpan.innerHTML = roundData[indexWinnerByTrump].handsWon;
+		const winner = roundData[indexWinnerByTrump];
+		winner.handsWon++;
+		gameplayHeadline.innerHTML = `<span style="color:var(--${winner.player}-color">🎉 ${winner.player}</span> won this round 🎉`;
+		const winnerPredictionSpan = document.querySelector(`.${winner.player}__hands-won`);
+		winnerPredictionSpan.innerHTML = winner.handsWon;
 		indexCopyTurn = indexWinnerByTrump;
 	}
 }
