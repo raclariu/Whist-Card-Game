@@ -55,8 +55,10 @@ async function predictHandsWon(newIndex) {
 }
 
 function predictClick(e, playerIndex, playerData, predictContainer) {
+	console.log(e, playerIndex, playerData, predictContainer);
 	let newIndex;
 	const prediction = parseInt(e.target.value);
+	gameplayHeadline.innerHTML = `<span style="color:var(--${playerData.player}-color">${playerData.player}</span> predicts ${prediction} hands`;
 	const currPredictionEl = document.querySelector(`.${playerData.player}__prediction`);
 	currPredictionEl.innerHTML = prediction;
 	roundData.push({
@@ -105,11 +107,6 @@ function updDataRoundEnd() {
 	playerPredictionSpan.forEach(span => (span.innerHTML = '?'));
 	playerHandsWonSpan.forEach(span => (span.innerHTML = '?'));
 	gameplayHeadline.innerHTML = 'Predict how many hands you will win...';
-	// const y = allData.filter(arr=>arr.filter(obj=>{
-	// 	let arr = []
-	// 	arr.push(obj)
-	// 	console.log(arr);
-	// }))
 	let orangeScore = 0;
 	let cyanScore = 0;
 	let magentaScore = 0;
@@ -131,9 +128,7 @@ function updDataRoundEnd() {
 	lime !== null ? (lime.innerHTML = limeScore) : '';
 }
 
-function updDataTurnEnd() {
-	console.log('afterTurnEnd');
-}
+function updDataTurnEnd() {}
 
 async function calculateScore() {
 	const dropSpaces = document.querySelectorAll('.container__card-space');
@@ -146,7 +141,6 @@ async function calculateScore() {
 		});
 
 		const checkEmptyHands = playerCardsEls.filter(element => element.childElementCount === 0);
-		console.log('empty hands', checkEmptyHands);
 		if (checkEmptyHands.length === startOfRoundData.length) {
 			console.log('NEW ROUND');
 			updateScore();
@@ -162,9 +156,7 @@ async function calculateScore() {
 		} else {
 			console.log('NEW TURN');
 			updDataTurnEnd();
-			roundData.forEach(player => {
-				console.log(player.player, player.playedSuit, player.playedValue);
-			});
+			roundData.forEach(player => {});
 			suit = undefined;
 			roundData.forEach(player => {
 				player.playedSuit = undefined;
@@ -181,13 +173,10 @@ async function calculateScore() {
 		filterTrump = roundData
 			.filter(player => player.playedSuit === trumpCard.dataset.suit)
 			.sort((a, b) => b.playedValue - a.playedValue);
-		// console.log(trumpCards);
-		// trumpCards.length > 0 ? (filterTrump = trumpCards) : undefined;
-		// console.log(filterTrump);
 	}
 
 	if (trumpCard === undefined || filterTrump.length === 0) {
-		console.log('win by suit', filterSuit);
+		console.log('Win by suit:', filterSuit);
 		const indexWinnerBySuit = roundData.findIndex(playerObj => playerObj.player === filterSuit[0].player);
 		const winner = roundData[indexWinnerBySuit];
 		winner.handsWon++;
@@ -196,7 +185,7 @@ async function calculateScore() {
 		winnerPredictionSpan.innerHTML = winner.handsWon;
 		indexCopyTurn = indexWinnerBySuit;
 	} else {
-		console.log('FILTERTRUMP', filterTrump);
+		console.log('Win by trump card:', filterTrump);
 		const indexWinnerByTrump = roundData.findIndex(playerObj => playerObj.player === filterTrump[0].player);
 		const winner = roundData[indexWinnerByTrump];
 		winner.handsWon++;

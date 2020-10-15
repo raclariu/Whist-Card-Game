@@ -56,7 +56,6 @@ function appendCard(e) {
 	draggedParent.classList.remove('current-turn');
 	cardsPlayed++;
 	addCardToRoundData(draggedCard);
-	console.dir(draggedCard);
 	checkRoundFinish();
 }
 
@@ -69,13 +68,9 @@ function onDrop(dropSpaces) {
 			if (draggedParent.classList.contains('current-turn')) {
 				if (e.target.classList.contains('container__card-space') && e.target.childElementCount === 0) {
 					const draggedSuit = draggedCard.dataset.suit;
-					console.log('Dragged name', draggedCard.dataset.owner);
-					console.log('Dragged suit', draggedSuit);
-					console.log('Dragged value', draggedCard.dataset.value);
 					if (suit === undefined) {
 						suit = draggedSuit;
 					}
-					console.log('suit', suit);
 
 					const allCurrPlayerCards = [
 						...document.querySelectorAll(`[data-player="${draggedCard.dataset.owner}"] img`)
