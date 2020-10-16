@@ -16,7 +16,7 @@ let playerCardsEls = document.querySelectorAll('.players__cards');
 // It will be used as indice for cardsDealt array (cardsDealt[round])
 let valuesAndSuits;
 let cardsDealt;
-let round = 10;
+let round = 22;
 let deckId;
 let trumpCard;
 let handIndex = 0;
@@ -230,6 +230,9 @@ async function drawTrumpCard(card) {
 // * Start round
 async function startRound() {
 	try {
+		if (round === cardsDealt.length) {
+			return endGame();
+		}
 		console.log('Starting round...');
 		await shuffleDeck();
 		const num = calcCardsToDraw();

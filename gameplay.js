@@ -1,3 +1,7 @@
+const orangeScoreText = document.querySelector('.orange__score');
+const cyanScoreText = document.querySelector('.cyan__score');
+const magentaScoreText = document.querySelector('.magenta__score');
+const limeScoreText = document.querySelector('.lime__score');
 let currPlayerIndex;
 let indexCopyTurn;
 let indexCopyRound;
@@ -55,14 +59,13 @@ async function predictHandsWon(newIndex) {
 }
 
 function predictClick(e, playerIndex, playerData, predictContainer) {
-	console.log(e, playerIndex, playerData, predictContainer);
 	let newIndex;
 	const prediction = parseInt(e.target.value);
 	gameplayHeadline.innerHTML = `<span style="color:var(--${playerData.player}-color">${playerData.player}</span> predicts ${prediction} hands`;
 	const currPredictionEl = document.querySelector(`.${playerData.player}__prediction`);
 	currPredictionEl.innerHTML = prediction;
 	roundData.push({
-		round    : round,
+		round    : round + 1,
 		player   : playerData.player,
 		predict  : prediction,
 		handsWon : 0,
@@ -111,10 +114,6 @@ function updDataRoundEnd() {
 	let cyanScore = 0;
 	let magentaScore = 0;
 	let limeScore = 0;
-	const orange = document.querySelector('.orange__score');
-	const cyan = document.querySelector('.cyan__score');
-	const magenta = document.querySelector('.magenta__score');
-	const lime = document.querySelector('.lime__score');
 
 	for (let arr of allData) {
 		arr.filter(obj => (obj.player === 'orange' ? (orangeScore += obj.score) : ''));
@@ -122,10 +121,10 @@ function updDataRoundEnd() {
 		arr.filter(obj => (obj.player === 'magenta' ? (magentaScore += obj.score) : ''));
 		arr.filter(obj => (obj.player === 'lime' ? (limeScore += obj.score) : ''));
 	}
-	orange.innerHTML = orangeScore;
-	cyan.innerHTML = cyanScore;
-	magenta !== null ? (magenta.innerHTML = magentaScore) : '';
-	lime !== null ? (lime.innerHTML = limeScore) : '';
+	orangeScoreText.innerHTML = orangeScore;
+	cyanScoreText.innerHTML = cyanScore;
+	magentaScoreText !== null ? (magentaScoreText.innerHTML = magentaScore) : '';
+	limeScoreText !== null ? (limeScoreText.innerHTML = limeScore) : '';
 }
 
 function updDataTurnEnd() {}
@@ -156,7 +155,6 @@ async function calculateScore() {
 		} else {
 			console.log('NEW TURN');
 			updDataTurnEnd();
-			roundData.forEach(player => {});
 			suit = undefined;
 			roundData.forEach(player => {
 				player.playedSuit = undefined;

@@ -337,3 +337,77 @@ body {
 .modal p {
     font-size: 1.1rem;
 }
+
+/* End Game */
+
+.end-container {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+}
+
+.end-player-container {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+}
+
+.end-player-container span {
+    background-color: #fff;
+    text-align: center;
+    height: 40px;
+    border-radius: 5px;
+    color: var(--bgcolor);
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.end-player-container .end-player {
+    width: 70%;
+    margin-right: 10px;
+    margin-bottom: 10px;
+}
+
+.end-player-container .end-score {
+    width: 30%;
+}
+
+.end-player-container .orange {
+    background-color: var(--orange-color);
+}
+
+.end-player-container .cyan {
+    background-color: var(--cyan-color);
+}
+
+.end-player-container .magenta {
+    background-color: var(--magenta-color);
+}
+
+.end-player-container .lime {
+    background-color: var(--lime-color);
+}
+
+.modal-table {
+    background-color: #fff;
+    border-radius: 5px;
+    box-shadow: -5px 5px 2px 1px rgba(0, 0, 0, 0.4);
+    position: absolute;
+    overflow: hidden;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    max-width: 100%;
+    width: 30%;
+    height: 80%;
+    text-align: left;
+    padding: 20px;
+    overflow-y: scroll;
+}
+
+tbody {
+    display: table;
+    margin: auto;
+}
