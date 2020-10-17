@@ -174,7 +174,7 @@ async function calculateScore() {
 	}
 
 	if (trumpCard === undefined || filterTrump.length === 0) {
-		console.log('Win by suit:', filterSuit);
+		console.log('Win by suit:', filterSuit, filterSuit[0].player);
 		const indexWinnerBySuit = roundData.findIndex(playerObj => playerObj.player === filterSuit[0].player);
 		const winner = roundData[indexWinnerBySuit];
 		winner.handsWon++;
@@ -183,7 +183,7 @@ async function calculateScore() {
 		winnerPredictionSpan.innerHTML = winner.handsWon;
 		indexCopyTurn = indexWinnerBySuit;
 	} else {
-		console.log('Win by trump card:', filterTrump);
+		console.log('Win by trump card:', filterTrump, filterTrump[0].player);
 		const indexWinnerByTrump = roundData.findIndex(playerObj => playerObj.player === filterTrump[0].player);
 		const winner = roundData[indexWinnerByTrump];
 		winner.handsWon++;

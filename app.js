@@ -1,10 +1,10 @@
 // DOM elements
 const menu = document.getElementById('menu');
 const newGameBtn = document.querySelector('.new-game__start');
+const rulesBtn = document.querySelector('.new-game__rules');
 const playerCountSelect = document.querySelector('.new-game__player-count');
 const modal = document.getElementById('modal-container');
 const closeModalIcon = document.querySelector('.fa-window-close');
-const rulesBtn = document.querySelector('.new-game__rules');
 const leftSide = document.getElementById('players');
 const rightSide = document.getElementById('play-area');
 const playCardsContainer = document.querySelector('.play-area__cards-container');

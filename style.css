@@ -42,7 +42,7 @@ body {
     align-items: center;
 }
 
-#btn {
+.new-game__start, .new-game__rules {
     cursor: pointer;
     padding: 15px;
     margin-top: 10px;
@@ -56,8 +56,22 @@ body {
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.6);
 }
 
-#btn:active {
+.new-game__start:active, .new-game__rules:active, .detailed-results-btn:active {
     transform: scale(0.97);
+    box-shadow: none;
+}
+
+.new-game__player-count {
+    width: 150px;
+    margin-top: 10px;
+    padding: 10px;
+    font-size: 20px;
+    border-radius: 10px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.6);
+}
+
+.new-game__player-count:focus {
+    outline: none;
 }
 
 /* Players area */
@@ -211,19 +225,6 @@ body {
 
 /* Game area */
 
-.new-game__player-count {
-    width: 150px;
-    margin-top: 10px;
-    padding: 10px;
-    font-size: 20px;
-    border-radius: 10px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.6);
-}
-
-.new-game__player-count:focus {
-    outline: none;
-}
-
 #play-area {
     display: none;
     justify-content: center;
@@ -252,6 +253,22 @@ body {
     justify-content: center;
     align-items: center;
     margin: 10px;
+}
+
+.card-space__orange-glow {
+    box-shadow: -0 0 3px 5px rgb(255, 130, 14);
+}
+
+.card-space__cyan-glow {
+    box-shadow: -0 0 3px 5px rgb(21, 184, 224);
+}
+
+.card-space__magenta-glow {
+    box-shadow: -0 0 3px 5px rgb(212, 45, 143);
+}
+
+.card-space__lime-glow {
+    box-shadow: -0 0 3px 5px rgb(17, 196, 86);
 }
 
 /* Drag Drop */
@@ -305,7 +322,7 @@ body {
 
 .modal {
     background-color: #fff;
-    border-radius: 5px;
+    border-radius: 10px;
     box-shadow: -5px 5px 2px 1px rgba(0, 0, 0, 0.4);
     position: absolute;
     overflow: hidden;
@@ -390,24 +407,84 @@ body {
     background-color: var(--lime-color);
 }
 
+.detailed-results-btn {
+    cursor: pointer;
+    padding: 10px;
+    outline: none;
+    border: none;
+    border-radius: 10px;
+    font-size: 20px;
+    width: 100%;
+    color: #fff;
+    margin-top: 20px;
+    background-color: rgb(42, 153, 85);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.6);
+}
+
 .modal-table {
     background-color: #fff;
-    border-radius: 5px;
+    border-radius: 10px;
     box-shadow: -5px 5px 2px 1px rgba(0, 0, 0, 0.4);
     position: absolute;
     overflow: hidden;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    max-width: 100%;
-    width: 30%;
-    height: 80%;
-    text-align: left;
+    width: 40%;
+    height: 85%;
     padding: 20px;
-    overflow-y: scroll;
+    overflow-y: auto;
+}
+
+table {
+    width: 90%;
+    margin: auto;
+}
+
+table:last-of-type {
+    margin-bottom: 25px;
 }
 
 tbody {
     display: table;
-    margin: auto;
+    width: 100%;
+    margin-top: 25px;
+    border-radius: 10px;
+    /* box-shadow: -1px 1px 10px 3px rgba(14, 13, 19, 0.2); */
+}
+
+td {
+    font-weight: bold;
+    text-align: center;
+    border-radius: 10px;
+    height: 30px;
+    width: 20%;
+    box-shadow: 0 3px 3px 2px rgba(14, 13, 19, 0.4);
+    background-color: rgb(233, 233, 233);
+}
+
+td.cell__orange {
+    background-color: var(--orange-color);
+}
+
+td.cell__cyan {
+    background-color: var(--cyan-color);
+}
+
+td.cell__magenta {
+    background-color: var(--magenta-color);
+}
+
+td.cell__lime {
+    background-color: var(--lime-color);
+}
+
+td.cell__round {
+    color: #fff;
+    background-color: rgb(88, 26, 202);
+}
+
+td.cell__prediction, td.cell__hands-won, td.cell__score {
+    color: #fff;
+    background-color: rgba(48, 43, 75, 0.9);
 }

@@ -72,6 +72,8 @@ function onDrop(dropSpaces) {
 						suit = draggedSuit;
 					}
 
+					draggedCard.classList.add(`card-space__${draggedCard.dataset.owner}-glow`);
+
 					const allCurrPlayerCards = [
 						...document.querySelectorAll(`[data-player="${draggedCard.dataset.owner}"] img`)
 					];
